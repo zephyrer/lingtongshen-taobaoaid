@@ -1,0 +1,1164 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 12.0">
+<title>Perl2Exe User Manual</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h2 align="center">Perl2Exe User Manual</h2>
+
+<p>Nov 28 2010</p>
+
+<hr>
+
+<h3>CONTENTS</h3>
+
+<p>About This Program<br>
+System Requirements<br>
+Installation<br>
+Release History<br>
+Contacting the Author<br>
+License Agreement<br>
+</p>
+
+<hr>
+
+<h3>About This Program</h3>
+
+<p>Perl2Exe is a command line utility for converting Perl scripts to executable files.</p>
+
+<p>This allows you to create stand alone programs in perl that do not require the perl
+interpreter. You can also ship the executable file without having to ship your perl source
+code.</p>
+
+<p>Perl2Exe also allows you to create no-console programs using Tk.&nbsp; </p>
+
+<p>Perl2Exe for Unix can generate executables for supported Unix machines.&nbsp; Perl2Exe
+for Unix can also be used from a Windows host to generate executables for a Unix target
+host.</p>
+
+<p>This document covers  Perl2Exe V6.00 and later.</p>
+
+<hr>
+
+<h4>Usage:</h4>
+
+<p>perl2exe myscript.pl<br>
+or<br>
+perl2exe [options] myscript.pl</p>
+
+<p>This will convert a script named myscript.pl to myscript.exe. </p>
+
+<h4>options:</h4>
+
+<table border="1">
+  <tr>
+    <td>-v</td>
+    <td>Verbose output</td>
+  </tr>
+  <tr>
+    <td>-register</td>
+    <td>This option allow you to enter registration information for Perl2Exe. You will be
+    prompted for a registration key.</td>
+  </tr>
+  <tr>
+    <td>-small</td>
+    <td>Generates a smaller executable which uses a shared runtime DLL. The generated
+    executable will be smaller by about 600KB. The executable will require a shared DLL,
+    p2xXXX.dll to run. This DLL will be copied to the current directory.<p>
+    Applies to the Pro version on Windows only.</td>
+  </tr>
+  <tr>
+    <td>-tiny</td>
+    <td>Create an even smaller executable by placing additional code into DLL's. Perl2Exe will
+    create DLL files in the current directory containing code from loadable modules which use
+    pll, dll, or so files. This option is not available in the Lite versions of Perl2Exe.</td>
+  </tr>
+  <tr>
+    <td>-gui</td>
+    <td><p>Create a no-console executable.&nbsp; This can be used for Tk and Win32::GUI
+    applications. &nbsp; I/O to STDOUT and STDIN will not be visible.&nbsp; If 
+    your application does not work do not use the -gui option while testing as 
+    it will hide possible error messages.<p>Applies to Windows version only.</td>
+  </tr>
+  <tr>
+    <td>-icon=filename</td>
+    <td><p>Add a user supplied icon to the executable. The icon must contain a Standard(32x32)
+    and a Small(16x16) bitmap and must be 1078 bytes long.</p>
+    <p>How to create the required icon using Dev Studio: <br>
+    Start DevStudio and open or create a new icon file. Draw the Standard (32x32) icon image.
+    Press the Insert key. Select Small (16x16). Draw the small icon image. Save the icon file.
+    </p>
+    <p>Icons will not display on Win95 systems unless IE is also installed.</p>
+    <p>Applies to Windows&nbsp; version only</td>
+  </tr>
+  <tr>
+    <td>-o=filename</td>
+    <td>Specify the output filename.</td>
+  </tr>
+  <tr>
+    <td>-platform=SunOS<br>
+      -platform=Linux<br>
+    etc</td>
+    <td>Specify the target platform for the executable.&nbsp; The default is based on the host
+    machine.&nbsp; On a Linux host the default is linux, on a SunOS (Solaris) host the default is
+      SunOS.
+    &nbsp; For a full list of available platforms type the command 'perl2exe'.<p>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>-noopt</td>
+    <td>Disable some optimization.</td>
+  </tr>
+  <tr>
+    <td>-opt</td>
+    <td>Increase optimization.&nbsp; Line numbers in error messages will not 
+    match your code if this option is used.</td>
+  </tr>
+  <tr>
+    <td>-I=dir1:dir2</td>
+    <td>This will cause Perl2Exe to search in additional directories for modules</td>
+  </tr>
+  </table>
+
+<p>&nbsp;</p>
+
+<p><b>Pragmas:</b></p>
+
+<p>The following comments in your source code will affect the way that perl2exe 
+operates.</p>
+
+<table border="1">
+  <tr>
+    <td>#perl2exe_include&nbsp;modulename</td>
+    <td>Add the named module to the executable.&nbsp; Examples:<br>
+    #perl2exe_include Data::Dumper<br>
+    #perl2exe_include &quot;Data/Dumper.pm&quot;</td>
+  </tr>
+  <tr>
+    <td>#perl2exe_exclude&nbsp;modulename</td>
+    <td>Exclude the named module from the executable.&nbsp; Examples:<br>
+    #perl2exe_exclude Data::Dumper<br>
+    #perl2exe_exclude &quot;Data/Dumper.pm&quot;</td>
+  </tr>
+  <tr>
+    <td>
+
+<p>#perl2exe_noopt</p>
+
+    </td>
+    <td>Disable optimization for the current source file</td>
+  </tr>
+  <tr>
+    <td>#perl2exe_noopt&nbsp;modulename</td>
+    <td>Disable optimization for the named modules</td>
+  </tr>
+  <tr>
+    <td>#perl2exe_bundle&nbsp;filename</td>
+    <td>The named file will be added to the executable.&nbsp; At run time the 
+    file will be extracted to a temp directory where it can used by your 
+    application for any purposes.&nbsp; The file will be removed when the 
+    program exits.&nbsp; The temp directory is given by:<p>$temp_dir = ( $ENV{TEMP} 
+    || $ENV{TMP} || $ENV{WINDIR} || '/tmp' ) . &quot;/p2xtmp-$$&quot;;<p>
+    Example:<br>
+    #perl2exe_bundle&nbsp;&quot;/some/path/myfile.gif&quot;</td>
+  </tr>
+  <tr>
+    <td>#perl2exe_info name=value</td>
+    <td>This pragma is used to set file version information for Windows 
+    executables.<p>Values are strings 
+    except FileVersion which must be of the form 'W.X.Y.Z' (where W, X, Y, and Z 
+are numbers in the range 0-65535. X, Y, and Z are optional and default to 0).&nbsp; 
+    Name is one of the following list.</p>
+    <p>CompanyName,
+FileDescription ,
+FileVersion,
+InternalName,
+LegalCopyright,
+LegalTrademarks,
+OriginalFilename,
+ProductName,
+ProductVersion, Comment.</td>
+  </tr>
+  </table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p><strong>Notes and FAQ's:</strong></p>
+
+<p><strong>1. Contacting us for support<br>
+</strong>If you are having trouble getting your executable to run, please send us the
+following information:</p>
+
+<ol>
+  <li>
+The script<br>
+    <b>Please strip the script down to the minimum needed to reproduce the problem.<br>
+</b>Ideally it should be a single script that does not require any special
+modules or instructions.</li>
+  <li>The output produced by 'perl2exe -v yourscript.pl'<br>
+    You can save the output to a file with the commands '
+perl2exe -v myscript.pl &gt; foo.txt'<br>
+    Do not send the binary executable</li>
+  <li>The output produced by 'perl -v'<br>
+    You can save the output to a file with the commands 'perl -v &gt;&gt; foo.txt'</li>
+  <li>
+The error messages produced by running your generated executable<br>
+    You can save the output to a file with the commands 'yourscript &gt;&gt;foo.txt'</li>
+  <li>
+The expected output of your script produced by running it with the perl
+interpreter</li>
+  <li>Optionally any data files etc. required by the script.</li>
+  <li>Optionally any non standard modules, if any,&nbsp; (.pm, .dll and .so files) requires by your script.</li>
+  <li>Please send the text files in the body of the main email message, or as attachments to
+the email message.&nbsp; Give text
+files a filename of *.txt.&nbsp; Do not place the text files in a zip or tar file.</li>
+</ol>
+<p>&nbsp;</p>
+
+<p><strong>2. Building your executable<br>
+</strong>Build your script with the command:<br>
+perl2exe yourscript.pl</p>
+
+<p>Perl2Exe will automatically scan your source code for use and require 
+statements.&nbsp; Required source modules (&quot;.pm&quot; files) and autoloadable (.dll 
+and .so files) will be automatically compiled into the executable file.&nbsp; On 
+Windows perl.exe must be in your path.</p>
+
+<p>Perl2Exe may print warnings about missing modules.&nbsp; If the module really 
+does not exist the warning can be ignored.&nbsp; You can suppress the warning 
+message by adding a '#perl2exe_exclude' pragma line to your script.</p>
+
+<p>Perl2Exe can handle most scripts without any changes. If your script contains 
+any 'use lib' statements, comment out the statements and use a -I command line 
+option to cause Perl2Exe to look in additional non-standard directories..</p>
+
+<p><strong>3. Testing your executable</strong></p>
+
+<p>Test the executable by running it from a command line prompt.&nbsp; </p>
+
+<p>If it dies with a &quot;Can't locate somemodule.pm in @INC ... &quot; error message, 
+then add an explicit use statement for the missing module to your script.</p>
+
+<p>Do not use the -gui option while testing as it will hide possible error 
+messages.</p>
+<p>If the executable still fails to run properly try running it with a -p2x_test 
+option.&nbsp; If this produces error messages about a missing then add an 
+explicit #perl2exe statement for the missing file to your script.&nbsp; If the 
+file really does not exist on your system then the message can be ignored.</p>
+
+<p><strong>4. &quot;Can't locate somemodule.pm in @INC at myscript.pl line 1&quot; error 
+message<br>
+</strong>If you get an error message like the one above, you can force the 
+missing module to be compiled into the exe by adding a line like one of the 
+following to your script:<br>
+<br>
+#perl2exe_include &quot;somemodule.pm&quot;;<br>
+<br>
+Or if the message is &quot;Can't locate Foo/Bar.pm in ...&quot;:<br>
+<br>
+#perl2exe_include &quot;Foo/Bar.pm&quot;;</p>
+
+<p>Please also send us the script with this problem, so we can fix the problem 
+in a future version of Perl2Exe.</p>
+
+<p><strong>5. Perl2exe compatibility<br>
+</strong>Perl2Exe V10.10 for Windows is compatible with Perl 5.12.2, 5.12.1, Perl 
+5.10.1, Perl 5.8.9, Perl 5.6.1<br>
+Perl2Exe V9.100 for Windows is compatible with Perl 5.10.0, Perl 5.8.8, Perl 5.6.1  Perl 5.005.<br>
+Perl2Exe V8.82 for Windows is compatible with Perl 5.8.8, Perl 5.8.7, Perl 5.6.1  Perl 5.005.<br>
+Perl2Exe V8.80 for Windows is compatible with Perl 5.8.8, Perl 5.8.7, Perl 5.6.1  Perl 5.005.<br>
+Perl2Exe V8.70 for Windows is compatible with Perl 5.8.7, Perl 5.8.6, Perl 5.6.1  Perl 5.005.<br>
+Perl2Exe V8.60 for Windows is compatible with Perl 5.8.6, Perl 5.8.4, Perl 5.6.1  Perl 5.005.<br>
+Perl2Exe V7.01 for Windows is compatible with Perl 5.8.0, Perl 5.6  Perl 5.005.<br>
+Perl2Exe V7.01 for Unix is compatible with Perl 5.8.0.<br>
+Perl2Exe V5.xx for Windows is compatible with Perl 5.6 and Perl 5.005.<br>
+Perl2Exe V5.xx for Unix is compatible with Perl 5.6.<br>
+Perl2Exe for Perl 5.6 is compatible with Perl 5.6.<br>
+Perl2Exe for Perl 5.005 is compatible with ActiveState's build 522 and other 5xx builds. <br>
+Perl2Exe for Perl 5.004 is compatible with &quot;Perl 5.004_02&quot; from CPAN, which is
+also called the standard build.&nbsp; <br>
+Perl2Exe for Perl 5.003 is compatible with &quot;Perl, version 5.003_07, Perl for 
+Windows
+Build 316&quot;.<br>
+Perl2Exe V1.xx for Unix is compatible with Perl 5.00503.</p>
+
+<p><strong>6. Perl2Exe performance<br>
+</strong>Programs created with Perl2Exe will run at about the same speed as Perl scripts
+run with the standard interpreter.</p>
+
+<p><strong>7. Using the glob function<br>
+</strong>Use the following code if your code uses the glob function:<br>
+use File::DosGlob 'glob';<br>
+@flist = glob &quot;*.*&quot;;</p>
+
+<p><strong>8. Using dbmopen<br>
+</strong>If your script contains a dbmopen function call, add the following two lines to
+your script.<br>
+use AnyDBM_File;<br>
+use SDBM_File;</p>
+
+<p>For some systems you may need these lines instead:<br>
+use AnyDBM_File;<br>
+use NDBM_File;<br>
+use DB_File;<br>
+use SDBM_File;<br>
+</p>
+
+<p><strong>9. Using the Tk library<br>
+</strong>If your script uses the Tk library it will be necessary to add some additional
+use statements to your main script. Build your executable in the normal way, 
+then when you run
+the program, if you get a message like &quot;Can't locate Tk/Entry.pm in @INC&quot;,  add &quot;use Tk::Entry;&quot; to your main script.</p>
+
+<p>If you see a message that says something like:<br>
+Can't find 'boot_IO' symbol in C:\WINDOWS\TEMP/IO.dll<br>
+<br>
+Run the command:<br>
+ren c:\perl\site\lib\auto\tk\io\io.dll io.dll.save</p>
+
+<p><strong>10. Creating an NT services<br>
+</strong>Perl2Exe can be used to create NT services. Use the SRVANY utility program which
+comes with Microsoft Resource Kit to start your executable as a service.&nbsp; Configure
+SRVANY to start in the directory where the executable is located.&nbsp; You will probably
+also need to use the -tiny option.</p>
+
+<p><strong>11. Extra Modules bundled with Perl2Exe for Unix<br>
+</strong>DBD::mysqlPP , DBI, HTML::Parser, libwww-perl,
+Net::MySQL, Tk, URI</p>
+
+<p><b>12. How to tell if the program is compiled with perl2exe<br>
+</b># How to tell if the program is compiled with perl2exe<br>
+if ($^X =~ /(perl)|(perl\.exe)$/i) {<br>
+    print "using perl interpreter\n";<br>
+}<br>
+else {<br>
+    print "Program is compiled with perl2exe\n";<br>
+}<br>
+<br>
+<strong>13.
+</strong><b> How to find the </b><strong>directory where the your application is
+located.<br>
+</strong># Next line is for Perl2Exe V5.02 and older<br>
+$0 = $^X unless ($^X =~ m%(^|[/\\])(perl)|(perl.exe)$%i);<br>
+my ($program_dir) = $0 =~ m%^(.*)[/\\]%;<br>
+$program_dir ||= ".";<br>
+print "program_dir = $program_dir\n&quot;;</p>
+
+
+
+
+
+
+
+
+
+
+<p><b>14. Using DBD::mysql</b>
+</p>
+
+<p>Perl2Exe for Unix V7.00 or greater comes with the DBD::mysqlPP module.&nbsp; 
+We suggest that you use this mysqlPP module instead of the mysql module.&nbsp; 
+In your DBI open statement change DBI:mysql to DBI:mysqlPP.&nbsp; Also add the 
+following lines to your script:<br>
+use DBD::mysqlPP;<br>
+use Carp::Heavy;</p>
+
+
+
+
+
+
+
+
+
+
+<p><b>15. How to use DBI with Perl2Exe<br>
+</b>1) Add the following lines to your script: <br>
+use DBI;<br>
+use DBD::mysql; <br>
+Replace mysql with whatever driver you use in your DBI open statement. <br>
+Do not use the #perl2exe_include statements.
+</p>
+
+<p><b>16. Using DBD::Oracle</b>
+</p>
+
+<p>If your application uses DBD::Oracle the Oracle client software must also be
+installed on the target computer.&nbsp; DBD::mysql does not have this limitation.
+</p>
+
+
+
+
+
+
+
+
+
+<p><b>17. Running multiple instances of your program<br>
+</b>When you run the executable it will extract any loadable modules that it uses, like
+Socket.so, to a temp directory. These loadable modules are loaded into memory later on.
+When the program exits the temporary files are deleted.</p>
+
+<p>
+This can fail in some circumstances.</p>
+
+<p>
+1) If you have two instances running, one of them can delete the files before the other
+has had a chance to load them.</p>
+
+<p>
+2) If the temp directory is not write-able the extract can fail.&nbsp; On Windows
+the temp directory is
+given by $ENV{'TEMP'} || $ENV{'TMP'} || $ENV{'WINDIR'} || &quot;.&quot;; and on Unix it is &quot;/tmp&quot;.</p>
+
+<p>To avoid this problem, compile your script with the -tiny option.&nbsp; This will generate an executable and a
+number of dll or 'so' files. Copy the generated dll or so files and executable to
+the same directory as the executable.</p>
+
+<p><b>18. How to debug a CGI script</b></p>
+
+<p>Instead of running the CGI executable from a web server, test the CGI executable by
+running it from a DOS window on Windows, or a telnet console on Unix.&nbsp; This will allow
+you to see any error messages that may be being printed.</p>
+
+<p>If you don't have telnet or console access to your server add this code to the top of
+your script:</p>
+
+<blockquote>
+
+<pre>BEGIN {
+&nbsp; $| = 1;
+&nbsp; open (STDERR, &quot;&gt;&amp;STDOUT&quot;);
+&nbsp; print &quot;Content-type: text/html\n\n&lt;pre&gt;\n&quot;;
+}</pre>
+
+</blockquote>
+
+<p><b>If you get a message like: &quot;Can't locate loadable object for module
+...&quot;</b></p>
+
+<p>Compile your script with the -tiny option.&nbsp; This will generate an executable and a
+number of dll or 'so' files. Copy the generated dll or so files and executable to
+the same directory as the executable.</p>
+
+<p><b>19. Building modules on Solaris with GCC</b></p>
+
+<p>Some versions of Perl2Exe for SunOS  will default to using the Solaris cc C
+compiler for building modules.&nbsp; If you have GCC installed you will need to
+make the following changes to the Config.pm file which will be located somewhere
+like ~/perl2exe/perl5/lib/5.6.0/sun4-solaris:<br>
+cc='cc' -&gt; cc='gcc'<br>
+ld='cc' -&gt; ld='gcc'<br>
+cccdlflags='-KPIC' -&gt; cccdlflags=''</p>
+
+<p><b>20. How to create icons for Perl2exe</b>
+</p>
+
+
+
+
+
+
+
+
+
+<p>You can create your icons with IconForge from <font size="3"><a href="http://www.cursorarts.com">www.cursorarts.com</a>
+</font>or Microsoft DevStudio.
+</p>
+
+
+
+
+
+
+
+
+
+<p>For IconForge <font size="3">install the software and follow the directions below.&nbsp;</font>
+</p>
+
+
+
+
+
+
+
+
+
+<p>1) Go to the &quot;File&quot; menu and choose &quot;New&quot;;<br>
+<br>
+2) Choose &quot;New Multi-resolution Icon&quot; from the fly-out list;<br>
+<br>
+3) This will open a small window which will hold the various icon sizes which
+you want to place inside the main icon. Click the green &quot;+&quot; button,
+and choose a size of &quot;16x16&quot; with &quot;16 colors&quot;;<br>
+<br>
+4) A small blank icon will be added to the window. Double-click this to paint
+this icon;<br>
+<br>
+5) Once you have finished your icon, File/Save it back into the Multi-resolution
+Icon window;<br>
+<br>
+6) Click the green &quot;+&quot; button to add another icon, and choose a size
+of &quot;32x32&quot; with &quot;16 colors&quot;;<br>
+<br>
+7) This will add a larger icon to the window. Click your completed smaller icon
+to highlight it, then click the &quot;Duplicate&quot; button (has a blue circle
+icon) to copy your smaller icon into the blank larger frame. You can then
+further edit the larger icon if you wish;<br>
+<br>
+8) Once you have finished editing, go to the &quot;File&quot; menu and select
+&quot;Save As&quot; from the list. Assign a name for the new icon, using the .ICO
+File Type.<br>
+Save the icon in the same directory as your script.<br>
+<br>
+For DevStudio<font size="3"> follow the directions below.</font>
+</p>
+
+<p><font size="3">1. Click on File, New</font>
+</p>
+
+<p><font size="3">2. Click on Files then 'Icon File'</font>
+</p>
+
+<p><font size="3">3. Draw the 32x32 portion of your icon</font>
+</p>
+
+<p><font size="3">3. Click Image then 'New Device Image'</font>
+</p>
+
+<p><font size="3">4. Click on 'Small (16x16)' then OK</font>
+</p>
+
+<p><font size="3">5. Draw the 16x16 [portion of your icon</font>
+</p>
+
+<p><font size="3">6. Click on File, 'SaveAs' to save your icon file<br>
+</font>
+Save the icon in the same directory as your script.
+</p>
+
+<p>
+After saving the icon, open a dos window, and type in the following:
+</p>
+
+<p>perl2exe -icon=youricon.ico yourscript.pl
+</p>
+
+<p><strong>21. Stripping comment lines<br>
+</strong>Perl2Exe  will remove all lines from scripts that start
+with the '#' character.&nbsp; If this a problem, you can override this behavior by using
+the -noopt option.&nbsp; The -noopt option will disable the stripping for all 
+source files.&nbsp; Do disable it for selective files only use the
+#perl2exe_noopt pragma.&nbsp; Example:<br>
+#perl2exe_noopt Foo<br>
+or<br>
+#perl2exe_noopt &quot;Foo.pm&quot;<br>
+or<br>
+#perl2exe_noopt &quot;bar.pl&quot;</p>
+
+<hr>
+
+<h3><a name="Requirements"></a>System Requirements</h3>
+
+<p>Windows versions:<br>
+Any 32 bit or 64-bit Windows system. E.g. Windows NT/2000/ME/XP/2003,Vista, 
+Windows 7, etc</p>
+
+<p>Unix versions:<br>
+Solaris, Linux, etc, or any 32 or 64 bit Windows system. E.g. Windows 
+NT/2000/ME/XP/2003,Vista, Windows 7, etc</p>
+
+<hr>
+
+<h3>Installation - Windows versions</h3>
+
+<p>Unzip the installation file to <a href="file:///c:/perl2exe">c:\perl2exe</a> 
+and add the directory to your path.</p>
+
+<p>If you have a registration key for Perl2Exe, start perl2exe with the command:<br>
+perl2exe -register</p>
+
+<p>This option allow you to enter registration information for Perl2Exe. You will be prompted
+for a registration key.</p>
+
+<hr>
+
+<h3>Installation - Perl2Exe for Unix on a Unix host</h3>
+
+<ol>
+  <li>Add ~/per2exe and ~/perl2exe/perl5/bin to your path.<br>
+  </li>
+  <li>Extract Perl2Exe tar file in your home (or other)
+    directory with the commands below.&nbsp; This will create a perl2exe directory and copy
+    the required files into it.&nbsp; In the following steps replace the * with SunOS or
+    Linux, etc.<br>
+    <br>
+    cd ~<br>
+    gzip -dc p2xunix-*.tar.gz | tar -x<br>
+    <br>
+    Repeat above step if installing multiple platform
+    versions.&nbsp; Your own platform version should be extracted last.&nbsp; For example on a
+    Linux host the Linux version should be extracted last.<br>
+  </li>
+  <li>Configure Perl2Exe with the commands below:<br>
+    cd ~/perl2exe<br>
+    ./setup<br>
+  </li>
+  <li>Building a test program:<br>
+    cd ~/perl2exe<br>
+    perl2exe lwpsamp.pl<br>
+    lwpsamp<br>
+  </li>
+  <li>If you have a compatible perl installation you can
+    replace the provided perl binary libraries with your own:<br>
+    cd ~/perl2exe<br>
+    rm -rf perl5<br>
+    perl ./setup_perl2exe.pl<br>
+  </li>
+  <li>Adding additional modules to the Perl library.<br>
+    You can add additional modules to the Perl library that comes with Perl2Exe. &nbsp;
+    Adding a module is done in the usual way:<br>
+    1) Make sure that you have added ~/perl2exe/perl5/bin to your path.<br>
+    2) download and expand the required tar file.<br>
+    3) cd into the extracted directory, and type the following commands:<br>
+    perl Makefile.PL<br>
+    make<br>
+    make test<br>
+    make install<br>
+  </li>
+</ol>
+
+<hr>
+
+<h3>Installation - Perl2Exe for Unix on a Windows host</h3>
+
+<ol>
+  <li>Unzip p2xunix-*.tar.gz to any directory, e.g c:\<br>
+    This will create a c:\perl2exe directory and copy the required files into it.&nbsp; If you
+    wish you can install in some other directory.&nbsp; Replace * with Linux, or SunOS, etc.
+    &nbsp; Repeat this step if installing multiple platform
+    versions.&nbsp; Even though the file is in tar.gz format is
+    will work on Windows.&nbsp; Use a program like Winzip to extract it.&nbsp; The download
+    process may rename the file by replacing the period with an underscore to
+    p2xunix-*_tar.gz, if it does rename it back to p2xunix-*.tar.gz .<br>
+  </li>
+  <li>Add c:\perl2exe to your path<br>
+  </li>
+  <li>Building a test program:<br>
+    cd c:\perl2exe<br>
+    perl2exe -platform=Linux lwpsamp.pl<br>
+    or<br>
+    perl2exe -platform=SunOS lwpsamp.pl<br>
+    This will create lwpsamp file in the current directory. Copy the file to your target host
+    and make it executable with &quot;chmod 755 lwpsamp&quot;.
+  </li>
+</ol>
+
+<hr>
+
+<h3>Installation - Perl2Exe for Windows on a Unix host</h3>
+
+<p>This requires Perl2Exe for Windows V5.00 or greater.&nbsp; The steps below are
+installing Perl2Exe for Windows on a Linux machine into directory
+~/perl2exe.&nbsp; Replace 'Linux' with your own machine name, and replace
+~/perl2exe with your installation directory.</p>
+
+<ol>
+  <li>Install Perl2Exe for Linux as described earlier.<br>
+  </li>
+  <li>Extract the perl2exe for Windows zip file into ~/perl2exe<br>
+  </li>
+  <li>Copy the contents of your Perl for Windows directory from your Windows (e.g. <a href="file:///c:/perl">c:\perl</a>)
+    to your Unix machine to the directory ~/perl2exe/perl-Windows.&nbsp; You can
+    use FTP to copy the files.&nbsp; Include the subdirectories when copying.
+  </li>
+</ol>
+
+<hr>
+
+<h3><a name="Release History"></a>Release History</h3>
+
+<p>
+
+<b>V10.10 Nov 28 2010<br>
+</b>Added support for Perl 5.12.2<br>
+Windows build includes new libraries for Perl 5.12.2, 5.12.1, 5.10.1, 5.8.9, 
+5.6.1<br>
+Fixes apply to all libraries<br>
+perl2exe_info pragma support added to all libraries<br>
+Support for signed executables<br>
+Support for multiple dll's with duplicate names<br>
+perl2exe_bundle pragma supports filenames with any extension</p>
+<p>
+
+<b>V9.110.00 Dec 5 2009<br>
+</b>Added support for Perl 5.10.1</p>
+
+<p>
+
+<b>V9.100 Jan 15 2008<br>
+</b>Added support for Perl 5.10.0</p>
+
+<p>
+
+<b>V8.82 Aug 21 2007<br>
+</b>Added support for Perl 5.8.8 build 822</p>
+
+<p>
+
+<b>V8.80 Apr 8 2006<br>
+</b>Added support for Perl 5.8.8</p>
+
+<p>
+
+<b>V8.70 Aug 17 2005<br>
+</b>Added support for Perl 5.8.7<br>
+<br>
+
+<b>V8.60 Feb 13 2005<br>
+</b>Added support for Perl 5.8.6<br>
+Fixed: Loading of modules fails on some systems where directory path starts 
+with '\\?\'<br>
+Fixed: Large bundled Files use a lot of memory when extracted<br>
+Fixed: Characters in Tk applications display as blobs<br>
+Fixed: -icon option does not work for Perl 5.8.3<br>
+Fixed: p2xtmp-$$ is not removed for Tk applications<br>
+Module versions updated</p>
+
+<p class="MsoNormal"><b>V8.40 Jun 29 2004<br>
+</b>Added support for Perl 5.8.4<br>
+Added version info (file properties) support for Windows<br>
+Use a unique temp directory for every instance<br>
+Version number in setup_perl2exe.pl is wrong<br>
+Add support for Perl 5.8.0, remove support for Perl 5.8.3<br>
+After reinstalling DBI on Linux says DBO.so version does not match<br>
+Building a module (.e.g DBI) tries to install man pages into system directory<br>
+Unix versions built with multithread support<br>
+<br>
+<b>V8.10 Feb 16 2004<br>
+</b>Added support for Perl 5.8.3</p>
+
+<p class="MsoNormal"><b>V8.00 Jan 1 2004<br>
+</b>Added support for Perl 5.8.2<br>
+Generated Windows executables are now up to 50% smaller<br>
+Fixed: Application sometimes crashs if PERL5LIB is set<br>
+Fixed: CGI executable hangs under Apace in trial mode.<br>
+Tiny executable fails if temp directory contains a left over DLLs from a 
+different version of Perl2Exe.<br>
+Added .txt, .ico and .png to list of files which can be bundled</p>
+
+<p><b>V7.02 Oct 18 2003</b><br>
+Fixes some errors in handling of unicode<br>
+Fixed: use Switch causes a crash<br>
+  Fixed: use Net::LDAP causes a crash - added support for seek on the DATA 
+  filehandle<br>
+Fixed: Building Windows code on Unix says &quot;ERROR: Unsupported perl version 
+  5.008&quot;<br>
+Fixed: Reading DATA causes a crash<br>
+Fixed: Reading END causes a crash<br>
+Fixed: DBD::mysqlPP treats literl '?' as placeholder<br>
+  DBD::mysqlPP version upgraded to 0.04 from 0.03<br>
+Fixed: suid application crashes<br>
+&nbsp;</p>
+
+<p><b>V7.01 July 4&nbsp; 2003</b><br>
+Updated setup_perl.pl to fix problems with building Perl modules<br>
+MacOSX build supports threading<br>
+&nbsp;</p>
+
+<p><b>V7.00 Dec 21 2002</b><br>
+Support for Perl 5.8.0<br>
+Updated module list<br>
+Fixed: Unix Perl interpreter print a newline and 2 second delay<br>
+Fixed: Windows version  requires that scripts have an extension<br>
+Fixed: Crashes if we read DATA<br>
+Fixed: Reading data after __END__ fails with GP fault.<br>
+Fixed: Crashes if last statement does not end with ';'<br>
+Added Modules DBI, DBD::mysqlPP</p>
+
+<p>&nbsp;</p>
+
+<p>V5.03-Win32 Oct 27, 2001<br>
+Several improvements to the parser to allow handling of wider range of use and
+require statements.<br>
+Output messages use \ on Win32 and / on Unix.<br>
+Add &quot;zip&quot; to the list of files which can be extracted.<br>
+Logic for searching for Dll's improved to handle dll's in current directory.<br>
+use FindBin; print &quot;$FindBin::Bin&quot;; now works.<br>
+Code starting with with '#' in main script is not stripped.<br>
+perl2exe-Win32.ini fixed to allow Perl2Exe for Unix to detect correct Perl
+version<br>
+Print warning if icon file size is wrong.<br>
+More flexible icon file format - can be any size as long as it contains 23x23 
+and 16x16 icon in any order</p>
+
+<p>V5.02-Unix June 24, 2001<br>
+Added support for Perl 5.6.1 for Unix versions
+</p>
+
+<p>V5.01-Win32 June 3, 2001<br>
+Added support for Perl 5.6.1
+</p>
+
+<p>V5.00-Unix Feb 24, 2001<br>
+V5.00-Win32 Feb 24, 2001<br>
+Supports building Win32 executables on Unix machines.<br>
+Win32 version supports Perl 5.6 and Perl 5.005_03 in the same version.<br>
+Rebuild with newer Perl 5.6 files should fix some cases of system and backtick
+commands<br>
+Will print an error message if temp files cannot be extracted to a
+    temporary directory, e.g. directory is read-only.<br>
+Fixed: -tiny option fails unless dlls are in current
+    directory<br>
+This version will only accept registration keys that are less than one year old,
+if you have an older license you will need to order an upgrade.<br>
+</p>
+
+<p>
+V1.09-Unix Jan 05, 2001<br>
+Fixed: use Compress::Zlib fails with &quot;Can't locate auto/Compress/Zlib/autosplit.ix
+in @INC...&quot;<br>
+Linux version rebuilt without linking libdb and libgdbm<br>
+Fixed algorithm for searching for loadable modules - affects user built modules
+like DBI and for module Dumper.<br>
+Executables are stripped to make them smaller<br>
+<br>
+V4.03-Win32 Oct 30, 2000<br>
+Fixed: exe GP fault if current directory is perl or perl\bin<br>
+Fixed &quot;Can't locate File/Spec/Win32.pm&quot; error when using File::Spec;<br>
+Autoinclude LWP/Protocol/https.pm if using Crypt/SSLeay.pm<br>
+<br>
+V4.02-Win32 Aug 29, 2000<br>
+Rebuilt with latest perl 5.6 source<br>
+<br>
+V4.01-Win32 July 15, 2000<br>
+Fixes a bug with the exec function<br>
+The variable $ENV{'sourceExe'} is no longer available<br>
+<br>
+V1.08-Unix May 19, 2000<br>
+Improved Tk support for mdules that use xbm and xpm files<br>
+Perl2Exe will automatically include most xbm and xpm files.<br>
+Suid scripts will work<br>
+Smaller stripped binary executable.</p>
+
+<p>V4.00-Win32 May 19, 2000<br>
+Support for Perl 5.6</p>
+
+<p>V3.13-Win32 May 19, 2000<br>
+The -p2x_xbm option is no longer used<br>
+Perl2Exe will autoinclude most xbm and xpm files.</p>
+
+<p>V3.12b-AP5XX Dec 16,1999<br>
+Fixed: GUI programs started hidden when using system or back-ticks</p>
+
+<p>V1.07-Unix Dec 29, 1999<br>
+Executable will also search the current directory for system .so files.<br>
+Added -libdb and -libgdbm options<br>
+Fixed: Cgi failed to run on Solaris with Netscape server and cgiwrap (SunOS)<br>
+Added support for AIX<br>
+Added support for FreeBSD<br>
+Fixed: BSDOS executables not working as cgi<br>
+Fixed: Using Mail::SendMail with libc=5 causes a fault when program exits (Linux5)<br>
+</p>
+
+<p>V1.06-Unix Nov 11 ,1999<br>
+Fixed GP fault&nbsp; which affects some modules containing __END__<br>
+Added the libnet module<br>
+Fixed: glob function was not working on SunOS and IRIX</p>
+
+<p><br>
+V3.12-AP5XX Nov 10 ,1999<br>
+Fixed the crypt function<br>
+Tested with Perl build 522<br>
+Minor documentation updates</p>
+
+<p>V1.05-Unix Oct 12 ,1999<br>
+Perl2Exe for Unix rebuilt with Perl 5.00503<br>
+Added support for SunOS Linux, HP-UX, BSDOS and IRIX</p>
+
+<p>V1.04-Unix Sep 10 ,1999<br>
+Release for each platform is now standalone and includes the Perl libraries<br>
+</p>
+
+<p>V3.11-AP5XX Aug 8,1999<br>
+Support for Build 518<br>
+Fixed: missing function Win32::CopyFile error<br>
+Fixed: returning a scalar from inside a for loop produces an undef result<br>
+Handling of these statements: require &quot;cgi-lib.pl&quot;; use File::DosGlob 'glob';
+use CGI qw(:cgi);<br>
+Handle the use lib 'somepath'; statement<br>
+Handle #!perl -options<br>
+<br>
+V3.10-AP5XX July 22,1999<br>
+Fixed an intermittent failure with opendir with a UNC path<br>
+Files like Tk.dll, Win32/process.dll, tk\autosplit.ix were not compiled into executable
+when using PRK<br>
+Fixed syntax error in CGi.pm<br>
+<br>
+V3.09-AP5XX June 19,1999<br>
+Fixes the following error with Tk programs 'couldn't read file
+&quot;PERL2EXE_STORAGE/Tk/minus.xpm&quot;'<br>
+Fixes GP fault on exit with -gui switch in trial mode.<br>
+Executables no longer require PerlCRT.dll if the script does not require the Socket
+module.<br>
+Can now handle requires containing a full path like: require 'c:\mylibrary\foo.pl';<br>
+The -gui option now generates an executable that no longer requires the pxdll.dll</p>
+
+<p>V1.03-Unix May 15,1999<br>
+Add Tk library to Solaris binary<br>
+Fixed error in registration key handling code</p>
+
+<p>V3.08-AP5XX May 05,1999<br>
+Fixes to support the following newer modules CGI.pm ,LWP::UserAgent, and Tk<br>
+- fixes tksamp.pl lwpsamp.pl</p>
+
+<p>V3.07-AP5XX April 22,1999<br>
+Now supports Perl 5.005_03 (build 515 etc)</p>
+
+<p>V1.02-Unix April 18,1999<br>
+Support for libc5 based Linux machines (Slackware and Caldera)</p>
+
+<p>V1.01-Unix April 14,1999<br>
+Fixes a divid by zero error when running Perl2Exe</p>
+
+<p>V1.00-Unix Mar 21,1999<br>
+Initial release<br>
+<br>
+V3.06-AP5xx Mar 12,1999<br>
+Fixed: LWP and Socket functions not working if -gui option used<br>
+Updated documentation </p>
+
+<p>V3.05-STD Mar 12, 1999<br>
+Updated documentaion</p>
+
+<p>V2.19-316 Mar 12, 1999<br>
+Updated documentaion</p>
+
+<p>V3.04B-STD Jan 19, 1999<br>
+Now supports the Lite registration key</p>
+
+<p>V3.05-AP5xx Jan 10, 1999<br>
+Fixed: command line parameters containing quoted spaces incorrectly handled with -gui
+option<br>
+Fixed: Crypt function was not implemented<br>
+Added -icon option<br>
+Search additional library directories to support PRK build 509<br>
+Fixed problem with -e -d on sharenames<br>
+<br>
+V3.04-STD Dec 10, 1998<br>
+Generates smaller executables<br>
+No longer requires CW3220MT.DLL</p>
+
+<p>V3.04-AP507 Dec 10, 1998<br>
+Generates smaller executables<br>
+Xbm option documented<br>
+Tested with Perl Build 507</p>
+
+<p>V3.03-AP506 Nov 15, 1998<br>
+Bug fix: file io when the -gui option is used now working correctly.<br>
+perloptions can be set from an environment variable.<br>
+Perl2Exe will search for library modules based on path and on PERL5LIB environment
+variables</p>
+
+<p><br>
+V3.03-STD Nov 15, 1998<br>
+Bug fix: system and backtick functions now work when -gui is not used.<br>
+perloptions can be set from an environment variable.<br>
+Perl2Exe will search for library modules based on path and on PERL5LIB environment
+variables</p>
+
+<p>V3.02-AP506 Nov 8, 1998<br>
+Perl2Exe will now find modules in build 506 (and 502) directory structure<br>
+Look for modules in directories below . and ./lib<br>
+Fixed: Use POSIX correctly handled<br>
+Fixed: Missing re.pm, used by File::Basename<br>
+Exe extract feature added<br>
+Default perloptions is now 'none'<br>
+</p>
+
+<p>V3.01-AP502 Sep 07, 1998<br>
+Added odbc sample code - cleaned up other samples<br>
+Automatically compiles IO if IO::Socket is used<br>
+Automatically compiles modules required by LWP::UserAgent<br>
+Fixed: close function sometimes fails with -gui option</p>
+
+<p>V3.00-AP502 Sep 02, 1998<br>
+Rebuilt to use perlcrt.dll, this fixes socket problems and supports LWP module<br>
+Fixed: Library modules in current directory not compiled<br>
+gui option will now say p2xdll.dll is required<br>
+Fixed: GUI exe will display a message if p2xdll.dll is missing or incorrect version</p>
+
+<p>V2.21-AP502 Aug 18, 1998<br>
+Initial release of Perl2Exe for ActivePerl</p>
+
+<p>V2.20-STD July 11,1998<br>
+Bug fix to remove Invalid argument -p2x_xx message<br>
+Standard version now uses same registration key as ActiveState version.</p>
+
+<p>V2.19-STD July 5,1998<br>
+Second release of the Standard version of Perl2Exe for Perl 5.004<br>
+Added -gui option for creating no-console executables</p>
+
+<p>V2.18-STD May 14,1998<br>
+Initial release of the Standard version of Perl2Exe for Perl 5.004</p>
+
+<p>V2.17-316 Mar 21, 1998<br>
+Rebuild for Perl Perl 5.003_07 Build 316<br>
+Bug fix: Get runtime error when modifying an environment variable<br>
+Bug fix: wildcards not expanded on command line arguments<br>
+Bug fix: Exe fails if filename is mixed case, eg &quot;perl2exe Sample&quot;<br>
+Bug Fix: Some system calls not working (see notes)<br>
+Documentation: dbmopen requires the addition of use AnyDBM_File; use SDBM_File;</p>
+
+<p>V2.16.2-315 Feb 25,1998<br>
+Fixed bug where $foo = &lt;IN&gt; would cause runtime error with -small option</p>
+
+<p>V2.16-315 Feb 9,1998<br>
+Enhancements to the -small option<br>
+Added -tiny option</p>
+
+<p>V2.15-315 Feb 7,1998<br>
+Rebuild for Perl Perl 5.003_07 Build 315</p>
+
+<p>V2.14-313 Feb 1,98<br>
+Introduced Pro and Lite versions of Perl2Exe<br>
+Added -small option<br>
+Removed need for special dynaloader.pm file</p>
+
+<p>V2.13-313 Jan 1,98<br>
+Fixed serious error which sometimes causes a GP fault when running generated exe from NT
+command line, or a &quot;parse exception&quot; when run from IIS.</p>
+
+<p>V2.12-313 Dec 4,97<br>
+Rebuild for Perl Perl 5.003_07 Build 313<br>
+Handle require &quot;foobar.pl&quot;; syntax<br>
+Handle conflict between Socket and IO::Socket<br>
+Socket i/o now works.</p>
+
+<p>V2.11-310 Nov 5,97<br>
+Minor documentation cleanup.<br>
+Handle &quot;use foobar;&quot; where there is a double space between use and foobar.</p>
+
+<p>V2.11 Oct 16,97<br>
+Fixed error when exe containing dynamically loaded modules files is executed as a cgi
+script.<br>
+Print error message if Dynaloader.pm is missing from Perl2Exe directory</p>
+
+<p>V2.10 Oct 13,97<br>
+Rebuild for Perl Perl 5.003_07 Build 310<br>
+Documentation is now in HTML.<br>
+Misleading error message references to temp directory cleaned up<br>
+Standalone improvements. Exe file can now be tested on PC, even if Perl is installed on
+it.</p>
+
+<p>V2.04<br>
+Base line version for Perl 5.003_07 Build 306</p>
+
+<p>V1.0<br>
+Original version</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h3>Contacting the Author</h3>
+
+<p>We'd like to hear your questions and comments!</p>
+
+<p>Contact Information: <a href="http://www.indigostar.com/contact.htm">http://www.indigostar.com/contact.htm</a><br>
+Web: <a href="http://www.indigostar.com">http://www.indigostar.com</a></p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h3>Ordering Information</h3>
+
+<p>For ordering information please visit our Web page.</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h3><a name="License"></a>LICENSE AGREEMENT</h3>
+
+<p>You should carefully read the following terms and conditions before using this
+software. Unless you have a different license agreement signed by IndigoSTAR Software,
+your use of this software indicates your acceptance of this license agreement and
+warranty.</p>
+
+<p><u>Registered Version</u></p>
+
+<p>Each registered copy of Perl2Exe may be used at a single workstation to create an
+unlimited number of exe files, subject to the following conditions:</p>
+
+<p>* A separate registered copy of Perl2Exe must be obtained for each workstation on which
+Perl2Exe will be used even if such use is only temporary. This is not a &quot;concurrent
+use&quot; license.</p>
+
+<p>* Exe files created by Perl2Exe are shipped with Run-time portions of Perl2Exe. No
+registered user, nor anyone else, may alter or modify the generated Exe files. You cannot
+give anyone else permission to modify the Exe files.</p>
+
+<p>* Exe files generated by the registered version of Perl2exe may be freely distributed. </p>
+
+<p>All rights not expressly granted in this license agreement are reserved entirely to
+IndigoSTAR Software</p>
+
+<p>Governing Law</p>
+
+<p>This agreement shall be governed by the laws of the Province of Ontario, Canada.</p>
+
+<p>Limited Warranty</p>
+<p>IndigoSTAR Software represents and warrants that the software and 
+accompanying files will operate and function as documented, and that IndigoSTAR 
+has full and sufficient right, title and authority to assign or grant the rights 
+and/or licenses granted under this License Agreement. IndigoSTAR further 
+warrants that neither the Software nor accompanying files infringe any 
+intellectual property rights or similar rights of any 3rd party and agrees to 
+indemnify you for any loss or damage related to a claim of infringement.<br>
+<br>
+Except for these limited warranties, this software and the accompanying files 
+are sold &quot;as is&quot; and without warranties as to performance of merchantability or 
+any other warranties whether expressed or implied. Because of the various 
+hardware and software environments into which Perl2Exe may be put, NO WARRANTY 
+OF FITNESS FOR A PARTICULAR PURPOSE IS OFFERED. Good data processing procedure 
+dictates that any program be thoroughly tested with non-critical data before 
+relying on it. The user must assume the entire risk of using the program. Except 
+for claims based on breach of the limited warranties or the indemnity provided 
+above, the liability of either party for claims arising under this Agreement 
+will be limited exclusively to the amount of fees paid under this agreement.</p>
+
+<p><u>Shareware Version</u></p>
+
+<p>You are hereby licensed to use the shareware evaluation
+version of Perl2Exe for evaluation purposes without charge for a period of 30 days.&nbsp; 
+This is not free software.&nbsp; If you
+use this software after the 30 day evaluation period a registration fee is required.&nbsp; Under
+no circumstances are you licensed to distribute Exe files created by the shareware
+evaluation version of Perl2Exe. Unregistered use of Perl2Exe after the 30 day
+evaluation period is in violation of copyright laws. </p>
+
+<p>Distribution of Perl2Exe </p>
+
+<p>You are hereby licensed to make as many copies of the shareware evaluation version of
+this software and documentation as you wish; give exact copies of the original shareware
+version to anyone; and distribute the shareware version of the software and documentation
+in its unmodified form via electronic means. There is no charge for any of the above.</p>
+
+<p>You are specifically prohibited from charging, or requesting donations, for any such
+copies, however made; and from distributing the software and/or documentation with other
+products (commercial or otherwise) without prior written permission, with one exception:
+Disk Vendors approved by the Association of Shareware Professionals are permitted to
+redistribute Perl2Exe subject to the conditions in this license, without specific written
+permission.</p>
+</body>
+</html>
