@@ -1,0 +1,18 @@
+RobotBoy Softeware 2011 v 1.0.2
+Rlease Date:Jun 12,2011
+Author:seven
+
+1 Changes, new features
+ 1.1 Fix bug of parsing error
+ 1.2 Fix bug of Chinese name incompatible with trade details 
+
+2 User guide
+ 2.1 Select records and trade files
+ 2.2 Analyze
+ 2.3 Check analyze details from text window
+ 2.4 Check analyze reports based on text window output
+
+3 Known issue
+  Does not support Chinese traditional displaying in text output window
+
+For details, pls contact to:lingtongshen@gmail.com
